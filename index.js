@@ -46,15 +46,8 @@ async function main() {
     }
   }
   // console.log("pageIds", pageIds);
-  try {
-    const data = await getPages(pageIds);
-    // if (data) {
-    //   console.log("data where we want it", data);
-    // }
-    console.log("data where we dont want it", data);
-  } catch (err) {
-    console.log("err", err);
-  }
+  const data = await getPages(pageIds);
+  console.log("data", data);
   // const res = await notion.databases.retrieve({
   //   database_id: process.env.NOTION_DB,
   // });
@@ -82,26 +75,20 @@ async function getDbs() {
 const getPages = async (pageIds) => {
   let pageData = [];
   try {
-    pageIds.forEach(async (p) => {
-      const page = await notion.pages.retrieve({ page_id: p });
+    for (let i = 0; i < pageIds.length; i++) {
+      const page = await notion.pages.retrieve({ page_id: pageIds[i] });
       if (!page) throw "No Page";
-      if (page) {
-        const data = {
-          email: page?.properties?.Email?.email,
-          url: page?.properties?.URL?.url,
-          checkbox: page?.properties?.["Check This"]?.checkbox,
-          phone: page?.properties?.Phone?.phone_number,
-          name: page?.properties?.Name?.title[0].plain_text,
-        };
-        // console.log("data", data);
-        pageData.push(data);
-        // console.log("pageData", pageData);
-      }
-      console.log("pageData", pageData);
-      pageData;
-    });
-    // console.log("pageData", pageData);
-    // return pageData;
+      const data = {
+        email: page?.properties?.Email?.email,
+        url: page?.properties?.URL?.url,
+        checkbox: page?.properties?.["Check This"]?.checkbox,
+        phone: page?.properties?.Phone?.phone_number,
+        name: page?.properties?.Name?.title[0].plain_text,
+      };
+      pageData.push(data);
+    }
+    console.log("pageData", pageData);
+    return pageData;
   } catch (err) {
     console.log("err", err);
     throw err;
